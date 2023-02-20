@@ -27,24 +27,42 @@ impl Counter {
         &self,
         data: &str,
     ) -> bool {
-        let mut current_count = 0;
-        for c in data.chars() {
-            if current_count >= self.min_number {
-                return true;
-            }
-            match (c, self.reset) {
-                ('\n', Reset::NewlinesReset) | (' ', Reset::SpacesReset)=> {
-                    current_count = 0;
-                }
-                _ => {}
-            }
-            if c != self.what {
-                continue;
-            }
-            current_count += 1;
-        }
-        false
+        has_count(self, data.chars())
     }
+}
+
+fn has_count(cntr: &Counter, chars: std::str::Chars) -> bool {
+    let mut current_count : u64 = 0;
+    for c in chars {
+        if got_count(cntr, c, &mut current_count) {
+            return true;
+        }
+    }
+    false
+}
+
+fn got_count(cntr: &Counter, c: char, current_count: &mut u64) -> bool {
+    if *current_count >= cntr.min_number {
+        return true;
+    }
+    maybe_reset(cntr, c, current_count);
+    maybe_incr(cntr, c, current_count);
+    false
+}
+
+fn maybe_reset(cntr: &Counter, c: char, current_count: &mut u64) -> () {
+    match (c, cntr.reset) {
+        ('\n', Reset::NewlinesReset) | (' ', Reset::SpacesReset)=> {
+            *current_count = 0;
+        }
+        _ => {}
+    };
+}
+
+fn maybe_incr(cntr: &Counter, c: char, current_count: &mut u64) -> (){
+    if c == cntr.what {
+        *current_count += 1;
+    };
 }
 
 #[pymodule]
