@@ -42,12 +42,9 @@ fn has_count(cntr: &Counter, chars: std::str::Chars) -> bool {
 }
 
 fn got_count(cntr: &Counter, c: char, current_count: &mut u64) -> bool {
-    if *current_count >= cntr.min_number {
-        return true;
-    }
     maybe_reset(cntr, c, current_count);
     maybe_incr(cntr, c, current_count);
-    false
+    *current_count >= cntr.min_number
 }
 
 fn maybe_reset(cntr: &Counter, c: char, current_count: &mut u64) -> () {
